@@ -19,18 +19,21 @@ function getToken () {
 # Function add card to board due date next week
 function addCardsNextWeek (){
 	echo "add Cards Next Week"
-	nextWeek=$(date "+%V" )
-	echo $nextWeek
-}
-
-# Fuction next sunday date
-function getDateOfNextSunday () {
 	dateOfNextSunday=$(date +%d-%m-%Y -d "Next Sunday")
-	#echo "return date of next Sunday"
-	#return $dateOfNextSunday
+	declare -i nextWeek=$(date "+%V"+1 )
+#	echo $nextWeek
+			# Just a memo on how to output the correct data jq -j '.weeks."42"[]' data.json
+	# Memo continue 
+	for i in $(jq -r '.weeks."$nextWeek"[].id' data.json); #will $nextWeek work here? Test
+		do 
+
+				# Add card via api
+				# Should this accept multiple variables?	
+		done
+
 }
 
+# main
 getToken
-getDateOfNextSunday
 addCardsNextWeek
 #echo "some text" + $dateOfNextSunday
