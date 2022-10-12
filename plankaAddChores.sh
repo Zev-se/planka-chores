@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables
-host=http://185.189.49.210:3000
+host=http://185.189.49.210:3000 #Add to variables.json
 
 # Function get token
 function getToken () {
@@ -11,7 +11,7 @@ function getToken () {
 #	echo $username
 #	echo $password
 	echo \"emailOrUsername=$username\&password=$password\"
-	curl -X POST --data emailOrUsername=$username\&password=$password $host/api/access-tokens > token.json
+	curl -X POST --data emailOrUsername=$username\&password=$password $host/api/access-tokens > token.json #add to variables.json
 	token=$(jq -j '.item' token.json)
 	echo $token
 }
