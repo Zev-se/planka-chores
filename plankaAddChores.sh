@@ -1,39 +1,35 @@
 #!/bin/bash
 
 # Variables
-host=http://185.189.49.210:3000 #Add to variables.json
+host=$(jq -j '.basics.host' variables.json)
+board=$(jq -j '.basics.mainBoard' variables.json)
+list=$(jq -j '.basics.list' variables.json)
+position=$(jq -j '.basics.position' variables.json)
 
 # Function get token
 function getToken () {
-	echo "getToken"
-	username=$(jq -j '.credentials.Username' variables.json)
-	password=$(jq -j '.credentials.Password' variables.json)
-#	echo $username
-#	echo $password
-	echo \"emailOrUsername=$username\&password=$password\"
+	username=$(jq -j '.credentials.username' variables.json)
+	password=$(jq -j '.credentials.password' variables.json)
 	curl -X POST --data emailOrUsername=$username\&password=$password $host/api/access-tokens > token.json #add to variables.json
-	token=$(jq -j '.item' token.json)
-	echo $token
+	token=$(jq -j '.credentials.token' variables.json)
 }
 
 # Function add card to board due date next week
 function addCardsNextWeek (){
-	echo "add Cards Next Week"
 	dateOfNextSunday=$(date +%d-%m-%Y -d "Next Sunday")
 	declare -i nextWeek=$(date "+%V"+1 )
-#	echo $nextWeek
-			# Just a memo on how to output the correct data jq -j '.weeks."42"[]' data.json
-	# Memo continue 
-	for i in $(jq -r '.weeks."$nextWeek"[].id' data.json); #will $nextWeek work here? Test
-		do 
 
-				# Add card via api
-				# Should this accept multiple variables?	
-		done
+	for i in $(jq -r '.weeks."'$nextWeek'"[].id' data.json); #will $nextWeek work here? Test
+		do 
+			chore=$(jq -r '.weeks."'$nextWeek'"[] | select(.id == "'$i'").chore' data.json)
+			curl -X POST -H 'Accept: application/json' -H "Authorization: Bearer $token" --data "name=$chore&listId=$list&position=$position" $host/api/boards/$board/cards | jq
+				# Should this accept multiple variables?
+				# Add chore label?
+
+		done;
 
 }
 
 # main
 getToken
 addCardsNextWeek
-#echo "some text" + $dateOfNextSunday
